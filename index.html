@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TARBOO API Hub - Login</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1e2e, #44475a);
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      color: #f8f8f2;
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      width: 320px;
+    }
+    .login-container h2 {
+      color: #ff79c6;
+      margin-bottom: 20px;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: #282a36;
+      color: #f8f8f2;
+      font-size: 1rem;
+    }
+    .login-container input::placeholder {
+      color: #888;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff79c6;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .login-container button:hover {
+      background-color: #bd93f9;
+    }
+    .alt-login {
+      margin-top: 20px;
+    }
+    .alt-login button {
+      background-color: #3b5998;
+      margin-top: 10px;
+    }
+    .google-btn {
+      background-color: #db4437 !important;
+    }
+    .alt-login button:hover {
+      opacity: 0.9;
+    }
+    .signup-link {
+      margin-top: 15px;
+      color: #bd93f9;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .signup-link:hover {
+      text-decoration: underline;
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+    .welcome-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #44475a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeOut 1s ease 3s forwards;
+    }
+    .welcome-text {
+      font-size: 2.2rem;
+      color: #ff79c6;
+      text-align: center;
+    }
+    @keyframes fadeOut {
+      from {opacity: 1;}
+      to {opacity: 0; visibility: hidden;}
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-screen">
+    <div class="welcome-text">أهلًا بك في TARBOO API Hub!</div>
+  </div>
+  <div class="login-container">
+    <h2>تسجيل الدخول</h2>
+    <input type="email" placeholder="البريد الإلكتروني" />
+    <input type="password" placeholder="كلمة المرور" />
+    <button>دخول</button>
+    <!-- رابط صفحة التسجيل الجديد بعد التعديل -->
+    <div class="signup-link">
+      ما عندكش حساب؟ <a href="signup.html">سجّل حساب جديد</a>
+    </div>
+    <div class="alt-login">
+      <button class="google-btn">دخول عبر Google</button>
+      <button>دخول عبر Facebook</button>
+    </div>
+    <div class="footer">© TARBOO - كل الحقوق محفوظة</div>
+  </div>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7NSz8dErUkKEkNnKQ_oqtJur26qOP9ls",
+      authDomain: "tarboo-api.firebaseapp.com",
+      databaseURL: "https://tarboo-api-default-rtdb.firebaseio.com",
+      projectId: "tarboo-api",
+      storageBucket: "tarboo-api.appspot.com",
+      messagingSenderId: "391314736451",
+      appId: "1:391314736451:web:108a7254f60b26d6e59bf6",
+      measurementId: "G-EF3J3KTV84"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const loginButton = document.querySelector(".login-container button");
+      loginButton.addEventListener("click", function () {
+        const email = document.querySelector('input[type="email"]').value;
+        const password = document.querySelector('input[type="password"]').value;
+
+        if (email && password) {
+          auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              alert("تم تسجيل الدخول بنجاح");
+              if (email === "mahmoudmahmed078@gmail.com") {
+                window.location.href = "dashboard.html";
+              } else {
+                window.location.href = "user-dashboard.html";
+              } // تغيير الصفحة حسب الحاجة
+            })
+            .catch((error) => {
+              alert("فيه مشكلة: " + error.message);
+            });
+        } else {
+          alert("من فضلك املأ كل البيانات");
+        }
+      });
+
+      // تسجيل دخول عبر Google
+      const googleBtn = document.querySelector(".google-btn");
+      googleBtn.addEventListener("click", function () {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .then((result) => {
+            alert("تم تسجيل الدخول عبر Google!");
+            window.location.href = "dashboard.html"; // تغيير الصفحة حسب الحاجة
+          })
+          .catch((error) => {
+            alert("خطأ في دخول Google: " + error.message);
+          });
+      });
+
+      // تسجيل دخول عبر Facebook
+      const fbBtn = document.querySelector(".alt-login button:not(.google-btn)");
+      fbBtn.addEventListener("click", function () {
+        const provider = new firebase.auth.FacebookAuthProvider();
+        auth.signInWithPopup(provider)
+          .then((result) => {
+            alert("تم تسجيل الدخول عبر Facebook!");
+            window.location.href = "dashboard.html"; // تغيير الصفحة حسب الحاجة
+          })
+          .catch((error) => {
+            alert("خطأ في دخول Facebook: " + error.message);
+          });
+      });
+    });
+  </script>
+</body>
+</html>

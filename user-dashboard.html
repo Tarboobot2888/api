@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TARBOO API Hub - المستخدم</title>
+  <style>
+    body {
+      background-color: #1e1e2e;
+      color: #f8f8f2;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    .title {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      color: #ff79c6;
+      text-shadow: 2px 2px #6272a4;
+    }
+    .subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      color: #bd93f9;
+    }
+    .api-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    .api-item {
+      background: #44475a;
+      padding: 20px;
+      border-radius: 12px;
+      transition: transform 0.3s, background 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+    .api-item:hover {
+      transform: translateY(-5px);
+      background: #6272a4;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #f8f8f2;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="userContainer" style="display:none;">
+    <div class="title">TARBOO API Hub</div>
+    <div class="subtitle">أفضل منصة لخدمات الألعاب، الطقس، الذكاء الاصطناعي والمزيد!</div>
+    <div class="api-list" id="api-list"></div>
+    <footer>© TARBOO - كل الحقوق محفوظة</footer>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7NSz8dErUkKEkNnKQ_oqtJur26qOP9ls",
+      authDomain: "tarboo-api.firebaseapp.com",
+      projectId: "tarboo-api",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // تحقق من تسجيل الدخول
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById("userContainer").style.display = "block";
+        const apis = [
+          "API الطقس",
+          "API الألعاب",
+          "API الذكاء الاصطناعي",
+          "API الأخبار",
+          "API الموسيقى",
+          "API الترجمة",
+          "API الصور",
+          "API الفيديو",
+          "API العملات",
+          "API الخرائط"
+        ];
+        const apiList = document.getElementById("api-list");
+        apis.forEach(api => {
+          const item = document.createElement("div");
+          item.className = "api-item";
+          item.textContent = api;
+          apiList.appendChild(item);
+        });
+      } else {
+        // يرجع المستخدم لتسجيل الدخول
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+</body>
+</html>

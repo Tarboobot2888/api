@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء حساب - TARBOO</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1e2e, #44475a);
+      color: #f8f8f2;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .signup-container {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      width: 320px;
+    }
+    .signup-container h2 {
+      color: #ff79c6;
+      margin-bottom: 20px;
+    }
+    .signup-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: #282a36;
+      color: #f8f8f2;
+      font-size: 1rem;
+    }
+    .signup-container input::placeholder {
+      color: #888;
+    }
+    .signup-container button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff79c6;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .signup-container button:hover {
+      background-color: #bd93f9;
+    }
+    .alt-login {
+      margin-top: 20px;
+    }
+    .alt-login button {
+      background-color: #3b5998;
+      margin-top: 10px;
+    }
+    .google-btn {
+      background-color: #db4437 !important;
+    }
+    .alt-login button:hover {
+      opacity: 0.9;
+    }
+    .login-link {
+      margin-top: 15px;
+      color: #bd93f9;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .login-link:hover {
+      text-decoration: underline;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>إنشاء حساب</h2>
+    <input type="text" placeholder="الاسم الكامل" id="fullName" />
+    <input type="date" placeholder="تاريخ الميلاد" id="dob" />
+    <input type="email" placeholder="البريد الإلكتروني" id="email" />
+    <input type="password" placeholder="كلمة المرور" id="password" />
+    <button id="signupButton">إنشاء الحساب</button>
+    <div class="login-link">
+      عندك حساب بالفعل؟ <a href="index.html">سجّل الدخول</a>
+    </div>
+    <div class="alt-login">
+      <button class="google-btn" id="googleBtn">دخول عبر Google</button>
+      <button id="facebookBtn">دخول عبر Facebook</button>
+    </div>
+    <footer>© TARBOO - كل الحقوق محفوظة</footer>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7NSz8dErUkKEkNnKQ_oqtJur26qOP9ls",
+      authDomain: "tarboo-api.firebaseapp.com",
+      projectId: "tarboo-api",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // إنشاء حساب عبر البريد الإلكتروني وكلمة المرور
+    document.getElementById("signupButton").addEventListener("click", () => {
+      const fullName = document.getElementById("fullName").value;
+      const dob = document.getElementById("dob").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // التحقق من تاريخ الميلاد (أقل من 18 سنة لا يمكنه التسجيل)
+      const birthDate = new Date(dob);
+      const age = new Date().getFullYear() - birthDate.getFullYear();
+      if (age < 18) {
+        alert("لا يمكنك التسجيل إذا كنت أقل من 18 سنة");
+        return;
+      }
+
+      // التحقق من وجود البريد الإلكتروني في Firebase
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          // إضافة بيانات المستخدم إلى Firestore
+          db.collection("users").doc(email).set({
+            fullName: fullName,
+            dob: dob,
+            email: email
+          })
+          .then(() => {
+            alert("تم إنشاء الحساب بنجاح!");
+            window.location.href = "index.html"; // إعادة توجيه إلى صفحة تسجيل الدخول
+          })
+          .catch((error) => {
+            alert("خطأ في حفظ بيانات المستخدم: " + error.message);
+          });
+        })
+        .catch((error) => {
+          // التحقق إذا كان البريد الإلكتروني موجود بالفعل
+          if (error.code === 'auth/email-already-in-use') {
+            alert("البريد الإلكتروني موجود بالفعل، حاول تسجيل الدخول");
+          } else {
+            alert("خطأ في إنشاء الحساب: " + error.message);
+          }
+        });
+    });
+
+    // تسجيل دخول عبر Google
+    document.getElementById("googleBtn").addEventListener("click", () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => {
+          alert("تم التسجيل عبر Google!");
+          window.location.href = "user-dashboard.html";
+        })
+        .catch((error) => {
+          alert("خطأ في تسجيل الدخول عبر Google: " + error.message);
+        });
+    });
+
+    // تسجيل دخول عبر Facebook
+    document.getElementById("facebookBtn").addEventListener("click", () => {
+      const provider = new firebase.auth.FacebookAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => {
+          alert("تم التسجيل عبر Facebook!");
+          window.location.href = "user-dashboard.html";
+        })
+        .catch((error) => {
+          alert("خطأ في تسجيل الدخول عبر Facebook: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>
